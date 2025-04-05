@@ -4,14 +4,24 @@ import 'react-toastify/dist/ReactToastify.css';
 import TodoItem from './components/TodoItem';
 import TodoForm from './components/TodoForm';
 import { todoApi } from './services/api';
+import { HandleImageUpload } from './Helper';
 
 function App() {
+
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [ selectedFiles, setSelectedFiles ] = useState([])
+      console.log(selectedFiles, "files");
+      
+ 
 
   useEffect(() => {
     fetchTodos();
   }, []);
+
+  const handleFileChange = (e) => {
+    setSelectedFiles(e.target.files)
+   }
 
   const fetchTodos = async () => {
     try {
@@ -68,6 +78,15 @@ function App() {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    const result1 = HandleImageUpload(selectedFiles, "single", "mapImage");
+    const resul2 = HandleImageUpload(selectedFiles, "single", "profile")
+    const result3 = HandleImageUpload(selectedFiles, "multiples", "others")
+    
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
       <div className="max-w-2xl mx-auto px-4">
@@ -113,6 +132,16 @@ function App() {
             ))
           )}
         </div>
+      </div>
+      <div>
+        <form onSubmit={handleSubmit} >
+          <input type="file"
+            accept='image/*'
+            onChange={handleFileChange} 
+            multiple
+          />
+          <button type='submit'>Upload</button>       
+        </form>
       </div>
     </div>
   );
