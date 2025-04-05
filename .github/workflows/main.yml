@@ -1,0 +1,75 @@
+name: Main Task Manager CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      # Build and test client
+      - name: Set up Node.js for client
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+          
+      - name: Install client dependencies
+        working-directory: ./client
+        run: npm ci
+        
+      - name: Build client
+        working-directory: ./client
+        run: npm run build
+        
+      - name: Build client Docker image
+        working-directory: ./client
+        run: docker build -t client-app:${{ github.sha }} .
+      
+      # Build and test server
+      - name: Set up Node.js for server
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+          
+      - name: Install server dependencies
+        working-directory: ./server
+        run: npm ci
+        
+      - name: Build server Docker image
+        working-directory: ./server
+        run: docker build -t server-app:${{ github.sha }} .
+      
+      # Run docker-compose
+      - name: Start services with docker-compose
+        run: |
+          docker-compose up -d
+          
+      # Example: Integration tests could be run here
+      - name: Integration tests
+        run: |
+          # Wait for services to be up
+          sleep 10
+          # Run tests
+          echo "Running integration tests..."
+      
+      # Example deployment step (commented out)
+      # - name: Deploy to production
+      #   if: github.ref == 'refs/heads/main'
+      #   run: |
+      #     # Deploy your application
+      #     echo "Deploying to production..."

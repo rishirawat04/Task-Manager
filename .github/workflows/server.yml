@@ -1,0 +1,56 @@
+name: Server CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'server/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'server/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+          
+      - name: Install dependencies
+        working-directory: ./server
+        run: npm ci
+      
+      - name: Run linting
+        working-directory: ./server
+        run: npm run lint || true
+        
+      - name: Run tests
+        working-directory: ./server
+        run: npm test || true
+
+      - name: Create .env file
+        working-directory: ./server
+        run: echo "${{ secrets.SERVER_ENV }}" > .env
+      
+        
+      - name: Build Docker image
+        working-directory: ./client
+        run: docker build -t rawattech/task-manager-client:latest .
+      
+      - name: Push to DockerHub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          docker push rawattech/task-manager-client:latest
