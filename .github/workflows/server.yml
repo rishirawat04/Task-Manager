@@ -44,8 +44,8 @@ jobs:
       
         
       - name: Build Docker image
-        working-directory: ./client
-        run: docker build -t rawattech/task-manager-client:latest .
+        working-directory: ./server
+        run: docker build -t rawattech/task-manager-server:latest .
       
       - name: Push to DockerHub
         env:
@@ -53,4 +53,4 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker push rawattech/task-manager-client:latest
+          docker push rawattech/task-manager-server:latest
