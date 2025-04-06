@@ -30,7 +30,7 @@ jobs:
              docker pull rawattech/task-manager-client:latest
              docker stop client-container || true
              docker rm client-container || true
-             docker run -d --pull always --name client-container -p 5173:5173 rawattech/task-manager-client:latest
+             docker run -d --pull always --name client-container -p 5173:80 rawattech/task-manager-client:latest
 
             cd ~/task-manager/server
              docker pull rawattech/task-manager-server:latest
