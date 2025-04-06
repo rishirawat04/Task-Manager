@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://rishitech.shop/api';
+const API_URL = 'http://rishitech.shop/api';
 
 export const todoApi = {
   getAllTodos: () => axios.get(`${API_URL}/todos`),
