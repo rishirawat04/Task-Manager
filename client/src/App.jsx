@@ -104,7 +104,7 @@ function App() {
         />
         
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
-          Todo List
+          Todo List RishiTech04
         </h1>
 
         <TodoForm onSubmit={handleAddTodo} />

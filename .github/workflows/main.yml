@@ -27,15 +27,19 @@ jobs:
           passphrase: ${{ secrets.EC2_SSH_PASSPHRASE }}
           script: |
             cd ~/task-manager/client
-            docker pull rawattech/task-manager-client:latest
-            docker stop client-container || true
-            docker rm client-container || true
-            docker run -d --name client-container -p 5173:5173 rawattech/task-manager-client:latest
+             docker pull rawattech/task-manager-client:latest
+             docker stop client-container || true
+             docker rm client-container || true
+             docker run -d --pull always --name client-container -p 5173:5173 rawattech/task-manager-client:latest
 
             cd ~/task-manager/server
-            docker pull rawattech/task-manager-server:latest
-            docker stop server-container || true
-            docker rm server-container || true
-            docker run -d --name server-container -p 5000:5000 rawattech/task-manager-server:latest
+             docker pull rawattech/task-manager-server:latest
+             docker stop server-container || true
+             docker rm server-container || true
+             docker run -d --pull always --name server-container -p 5000:5000 rawattech/task-manager-server:latest
 
-            sudo systemctl restart nginx
+            sudo systemctl restart nginx 
+
+
+
+            
