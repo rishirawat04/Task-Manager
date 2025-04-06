@@ -57,7 +57,7 @@ jobs:
       
       - name: Start services with docker-compose
         run: |
-          docker-compose up -d
+          docker compose up -d
       
       - name: Integration tests
         run: |
