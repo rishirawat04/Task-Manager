@@ -3,53 +3,29 @@ name: Client CI/CD
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'client/**'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'client/**'
-  workflow_dispatch:
+    paths: [ 'client/**' ]
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Set up Node.js
+
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json
-          
-      - name: Install dependencies
-        working-directory: ./client
-        run: npm ci
-        
-      - name: Build client
-        working-directory: ./client
-        run: npm run build
-      
-      - name: Run tests
-        working-directory: ./client
-        run: npm test || true
 
-      - name: Build Docker image
+      - name: Install deps & Build
         working-directory: ./client
-        run: docker build -t rawattech/task-manager-client:latest .
-      
-      - name: Push to DockerHub
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+          npm ci
+          npm run build
+
+      - name: Docker Build & Push
+        run: |
+          docker build -t rawattech/task-manager-client:latest ./client
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
           docker push rawattech/task-manager-client:latest
-        
-
-
- 
